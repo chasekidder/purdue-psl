@@ -1,6 +1,8 @@
 gunicorn --bind 0.0.0.0:5000 --workers 3 wsgi:app
+gunicorn --pythonpath src --bind 0.0.0.0:5000 --workers 3 wsgi:app
 
-celery worker --loglevel=INFO
+
+celery -A src.measure worker --loglevel=INFO
 
 sudo service rabbitmq-server start
 sudo service rabbitmq-server stop

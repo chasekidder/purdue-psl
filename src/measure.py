@@ -21,13 +21,14 @@ for sensor in CONFIG.SENSORS:
 
 # Initialize Celery Task for measurements
 @task_queue.task(name="src.measure.measurement_cycle")
-def measurement_cycle():
+def measurement_cycle(duration, frequency):
     setup()
 
+    target_time = time.time() + (60 * duration)
+
     i = 0
-    while (i < 10):
-        loop()
-        i = i + 1
+    while (time.time() < target_time):
+        loop(frequency)
 
     clean_up()
     
@@ -37,10 +38,10 @@ def setup():
     DB.backup()
 
 
-def loop():
+def loop(freq):
     # Set target time
     start = time.time()
-    end = start + 1
+    end = start + (1 / freq)
 
     # Get responses from sensors
     responses = {}
@@ -60,7 +61,9 @@ def loop():
     pass
 
     # Wait here until duration has elapsed
-    pass
+    while (time.time() < end):
+        time.sleep(0.001)
+
 
 def clean_up():
     # Verify File Integrity?

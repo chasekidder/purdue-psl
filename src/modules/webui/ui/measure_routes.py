@@ -28,7 +28,7 @@ def config():
             "duration": form.duration.data,
         }
 
-        task = measurement_cycle.delay()
+        task = measurement_cycle.delay(config["duration"], config["sample_frequency"])
         async_result = task_queue.AsyncResult(id=task.task_id, app=task_queue)
         
         flash("Success! Configuration sent to box. Measurements Starting...", "alert-success")

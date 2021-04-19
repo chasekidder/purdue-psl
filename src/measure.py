@@ -14,59 +14,40 @@ CONFIG = Config("config.ini")
 from src.modules.database import DB
 
 # Initialize Sensors
-
-#SENSORS = {
-#    "mass flow": init_sensor(CONFIG.SENSORS["mass flow 1"]),
-#}
 SENSORS = {}
 
 for sensor in CONFIG.SENSORS:
     SENSORS[sensor] = init_sensor(CONFIG.SENSORS[sensor])
 
+# Initialize Celery Task for measurements
 @task_queue.task(name="src.measure.measurement_cycle")
 def measurement_cycle():
     setup()
+
     i = 0
     while (i < 10):
         loop()
         i = i + 1
+
     clean_up()
     
 
 def setup():
-    # Open Comms
-    # Start WebUI
-    # Load Config File
-    
-
     # Backup Data Files
     DB.backup()
 
-    # Initialize Data File
-    pass
 
 def loop():
+    # Set target time
     start = time.time()
     end = start + 1
 
-    # Query Sensors
-    #responses = {name:sensor.read_all() for (name, sensor) in SENSORS}
-    #responses = {"gas pressure": SENSORS["gas pressure"].read_all(),
-    #            "teros12": SENSORS["teros12"].read_all(),
-    #            "oxygen": SENSORS["oxygen"].read_all(),
-    #            "altitude": SENSORS["altitude"].read_all(),
-    #            "pressure": SENSORS["pressure"].read_all(),
-    #            "mass flow": SENSORS["mass flow"].read_all(),
-    #            "co2": SENSORS["co2"].read_all(),
-
-    #}
-
-    #print(SENSORS)
-    #responses = {"mass flow": SENSORS["mass flow"].read_all()}
+    # Get responses from sensors
     responses = {}
     for sensor in SENSORS:
         responses[sensor] = SENSORS[sensor].read_all()
 
+    # Check if target time was hit
     if (time.time() < end):
             print("Hit Target!")
     else:
@@ -76,7 +57,9 @@ def loop():
     DB.log_data(responses)
 
     # Control Box (eg pump)
+    pass
 
+    # Wait here until duration has elapsed
     pass
 
 def clean_up():
@@ -84,4 +67,4 @@ def clean_up():
     pass
 
 if __name__ == "__main__":
-    print("measure.py finished!")
+    print("DO NOT RUN ME!")

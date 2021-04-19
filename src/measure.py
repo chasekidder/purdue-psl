@@ -1,32 +1,33 @@
-from .modules import database
-from .modules.config import Config
+from src.modules import database
+from src.modules.config import Config
 
-from .modules.sensors import NANO
+from src.modules.sensors.utils import NANO
 
-from .modules.ui.celery import task_queue
-#celery = Celery(broker="redis://localhost:6379/0")
-
+from src.modules.webui.celery import task_queue
 
 import time
-from psl_src.modules.sensors import init_sensor
+from src.modules.sensor import init_sensor
 
 
 CONFIG = Config("config.ini")
 
-DB = database.Database()
+from src.modules.database import DB
 
 # Initialize Sensors
 
-SENSORS = {
-    "gas pressure": init_sensor(CONFIG.SENSORS["Mass Flow 1"]),
+#SENSORS = {
+#    "mass flow": init_sensor(CONFIG.SENSORS["mass flow 1"]),
+#}
+SENSORS = {}
 
-}
+for sensor in CONFIG.SENSORS:
+    SENSORS[sensor] = init_sensor(CONFIG.SENSORS[sensor])
 
-@task_queue.task(name="measurement.cycle")
+@task_queue.task(name="src.measure.measurement_cycle")
 def measurement_cycle():
     setup()
     i = 0
-    while (i < 1):
+    while (i < 10):
         loop()
         i = i + 1
     clean_up()
@@ -50,15 +51,21 @@ def loop():
 
     # Query Sensors
     #responses = {name:sensor.read_all() for (name, sensor) in SENSORS}
-    responses = {"gas pressure": SENSORS["gas pressure"].read_all(),
-                "teros12": SENSORS["teros12"].read_all(),
-                "oxygen": SENSORS["oxygen"].read_all(),
-                "altitude": SENSORS["altitude"].read_all(),
-                "pressure": SENSORS["pressure"].read_all(),
-                "mass flow": SENSORS["mass flow"].read_all(),
-                "co2": SENSORS["co2"].read_all(),
+    #responses = {"gas pressure": SENSORS["gas pressure"].read_all(),
+    #            "teros12": SENSORS["teros12"].read_all(),
+    #            "oxygen": SENSORS["oxygen"].read_all(),
+    #            "altitude": SENSORS["altitude"].read_all(),
+    #            "pressure": SENSORS["pressure"].read_all(),
+    #            "mass flow": SENSORS["mass flow"].read_all(),
+    #            "co2": SENSORS["co2"].read_all(),
 
-    }
+    #}
+
+    #print(SENSORS)
+    #responses = {"mass flow": SENSORS["mass flow"].read_all()}
+    responses = {}
+    for sensor in SENSORS:
+        responses[sensor] = SENSORS[sensor].read_all()
 
     if (time.time() < end):
             print("Hit Target!")
@@ -77,5 +84,4 @@ def clean_up():
     pass
 
 if __name__ == "__main__":
-    print("dont run me!")
-    print(SENSORS)
+    print("measure.py finished!")

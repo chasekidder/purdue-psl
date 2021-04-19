@@ -1,10 +1,10 @@
-from psl_src.modules.sensors.utils import Sensor, NANO, NANO_I2C_ADDR
+from src.modules.sensors.utils import Sensor, NANO, NANO_I2C_ADDR
 import smbus2
 import time
 
 import re
 
-class LOX02F(Sensor):
+class sensor(Sensor):
     def __init__(self):
         self.bus = smbus2.SMBus(1)
         time.sleep(0.01)

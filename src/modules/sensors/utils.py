@@ -1,4 +1,4 @@
-from psl_src.modules.config import Config
+from src.modules.config import Config
 
 CONFIG = Config("config.ini")
 

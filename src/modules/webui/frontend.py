@@ -1,6 +1,6 @@
 from flask import Flask
-from webui.ui.home_routes import home_routes
-from webui.ui.measure_routes import measure_routes
+from src.modules.webui.ui.home_routes import home_routes
+from src.modules.webui.ui.measure_routes import measure_routes
 #from app.database.views import db_routes
 #from app.sensors.views import sensor_routes
 
@@ -22,7 +22,7 @@ app.register_blueprint(measure_routes)
 #app.register_blueprint(sensor_routes)
 
 
-app.config.from_object('webui.config.DevConfiguration')
+app.config.from_object('src.modules.webui.config.DevConfiguration')
 
 # Create database
 #db = SQLAlchemy(app)

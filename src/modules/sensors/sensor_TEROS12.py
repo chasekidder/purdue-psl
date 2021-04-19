@@ -1,11 +1,11 @@
-from psl_src.modules.sensors.utils import Sensor, NANO, NANO_I2C_ADDR
+from src.modules.sensors.utils import Sensor, NANO, NANO_I2C_ADDR
 import smbus2
 import time
 
 import re
 
 
-class TEROS12(Sensor):
+class sensor(Sensor):
     def __init__(self, address):
         self.address = address
 

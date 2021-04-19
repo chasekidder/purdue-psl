@@ -1,3 +1,6 @@
 gunicorn --bind 0.0.0.0:5000 --workers 3 wsgi:app
 
 celery worker --loglevel=INFO
+
+sudo service rabbitmq-server start
+sudo service rabbitmq-server stop

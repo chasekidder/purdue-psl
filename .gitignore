@@ -136,3 +136,6 @@ dmypy.json
 .vscode/ipch
 .gitignore
 platformio.ini
+src/database.sqlite3
+src/database.sqlite3.sql
+.vscode/settings.json

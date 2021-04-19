@@ -1,4 +1,4 @@
-from psl_src.modules.sensors.utils import Sensor, NANO, NANO_I2C_ADDR
+from src.modules.sensors.utils import Sensor, NANO, NANO_I2C_ADDR
 import smbus2
 import time
 

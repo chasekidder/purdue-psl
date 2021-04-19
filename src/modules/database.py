@@ -2,7 +2,7 @@ import sqlite3
 import os
 import io
 
-from psl_src.modules.config import Config
+from src.modules.config import Config
 
 CONFIG = Config("config.ini")
 
@@ -10,7 +10,7 @@ DEFAULT_PATH = os.path.join(CONFIG.PATH, "database.sqlite3")
 DEFAULT_BACKUP_PATH = DEFAULT_PATH + ".sql"
 
 class Database():
-    def __init__(self, path:str = DEFAULT_PATH):
+    def __init__(self, path = DEFAULT_PATH):
         if (os.path.exists(path)):
             self.con = sqlite3.connect(path)
         else:
@@ -34,23 +34,12 @@ class Database():
             print('Backup performed successfully.')
 
     def log_data(self, responses:dict):
-        sql_insert = "INSERT INTO measurements (sensor, timestamp, type, value, unit) VALUES (?, ?, ?, ?, ?)"
+        sql_insert = """
+                INSERT INTO measurements (
+                    sensor, timestamp, type, value, unit) 
+                VALUES (?, ?, ?, ?, ?);
+                """
 
-        # Responses = {
-        #           sensor1:[
-        #               {
-        #                   time:int,
-        #                   type:str,
-        #                   val:float,
-        #                   unit:str
-        #               }
-        #           ], 
-        #           sensor2:[
-        #                   {},
-        #                   {}
-        #           ],
-        #           ...
-        #       }
         for sensor in responses: 
             for measurement in responses[sensor]:
                 # Insert data into database
@@ -59,3 +48,32 @@ class Database():
                     measurement["type"], measurement["value"], measurement["unit"]))
 
         self.con.commit()
+
+
+    def get_most_recent(self, sensor_name):
+        keys = [
+            "id",
+            "sensor_name",
+            "timestamp",
+            "type",
+            "value",
+            "unit"
+        ]
+
+        sql_insert = f"""
+            SELECT * 
+            FROM measurements 
+            WHERE measurements.timestamp = (
+                SELECT MAX(measurements.timestamp) 
+                FROM measurements
+                WHERE measurements.sensor = '{ sensor_name}') 
+            and measurements.sensor = '{ sensor_name }';""" 
+        print(sql_insert)
+        query = self.con.execute(sql_insert).fetchall()
+        values = list(query.pop(0))
+        response = dict(zip(keys, values))
+        return response
+
+
+
+DB = Database()

@@ -13,12 +13,17 @@ from src.modules.webui.ui.forms import CycleConfigForm
 from src.measure import measurement_cycle
 from src.modules.webui.celery import task_queue
 
-from src.modules.database import DB
+routes = Blueprint("routes", __name__)
 
-measure_routes = Blueprint("measure_routes", __name__)
+@routes.route('/')
+def index():
+    return render_template("index.html")
 
+@routes.route("/live/")
+def live():
+    return render_template("live.html")
 
-@measure_routes.route("/config/", methods=["GET", "POST"])
+@routes.route("/config/", methods=["GET", "POST"])
 def config():
     form = CycleConfigForm()
 
@@ -39,20 +44,20 @@ def config():
 
     return render_template("config.html", form=form)
 
-@measure_routes.route("/data/")
+@routes.route("/data/")
 def data():
     files = utils.get_files_in_dir("/")
     return render_template("data.html", file_list=files)
 
-@measure_routes.route("/download/")
+@routes.route("/download/")
 def download_root():
     return render_template("404.html"), 404
 
-@measure_routes.route("/download/<string:file_name>/")
+@routes.route("/download/<string:file_name>/")
 def download(file_name):
     return send_from_directory("/", filename=file_name)
 
-@measure_routes.route("/api/")
+@routes.route("/api/")
 def api():
     data = utils.get_live_data()
     return jsonify(data)

@@ -1,10 +1,5 @@
 from flask import Flask
-from src.modules.webui.ui.home_routes import home_routes
-from src.modules.webui.ui.measure_routes import measure_routes
-#from app.database.views import db_routes
-#from app.sensors.views import sensor_routes
-
-import sys
+from src.modules.webui.ui.routes import routes
 
 __version__ = (1, 0, 0, "dev")
 
@@ -17,10 +12,7 @@ app = Flask(__name__,
             )
 
 # Register routes
-app.register_blueprint(home_routes)
-app.register_blueprint(measure_routes)
-#app.register_blueprint(sensor_routes)
-
+app.register_blueprint(routes)
 
 app.config.from_object('src.modules.webui.config.DevConfiguration')
 

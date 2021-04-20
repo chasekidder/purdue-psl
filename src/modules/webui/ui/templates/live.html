@@ -55,7 +55,7 @@ Live Data
         setInterval(getLiveData, 1000);
 
         function getLiveData() {
-            const url = "/api/";  
+            const url = "/old_api/";  
             fetch(url)
                 .then((resp) => resp.json())
                 .then(function(new_live_data) {

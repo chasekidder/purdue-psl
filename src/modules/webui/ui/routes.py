@@ -61,3 +61,8 @@ def download(file_name):
 def api():
     data = utils.get_live_data()
     return jsonify(data)
+
+@routes.route("/old_api/")
+def api():
+    data = utils.old_get_live_data()
+    return jsonify(data)

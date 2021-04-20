@@ -63,6 +63,6 @@ def api():
     return jsonify(data)
 
 @routes.route("/old_api/")
-def api():
+def old_api():
     data = utils.old_get_live_data()
     return jsonify(data)

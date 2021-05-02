@@ -6,3 +6,5 @@ celery -A src.measure worker --loglevel=INFO
 
 sudo service rabbitmq-server start
 sudo service rabbitmq-server stop
+
+sshfs pi@IP: mnt_folder

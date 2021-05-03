@@ -40,12 +40,16 @@ class Database():
                 VALUES (?, ?, ?, ?, ?);
                 """
 
+        
         for sensor in responses: 
-            for measurement in responses[sensor]:
-                # Insert data into database
-                print(measurement)
-                self.curs.execute(sql_insert, (sensor, str(measurement["timestamp"]),
-                    measurement["type"], measurement["value"], measurement["unit"]))
+            try:
+                for measurement in responses[sensor]:
+                    # Insert data into database
+                    print(measurement)
+                    self.curs.execute(sql_insert, (sensor, str(measurement["timestamp"]),
+                        measurement["type"], measurement["value"], measurement["unit"]))
+            except:
+                print("Skipping Invalid Measurement...")
 
         self.con.commit()
 

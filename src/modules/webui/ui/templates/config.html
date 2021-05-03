@@ -11,11 +11,24 @@ Home
         <div class="container">
             <form action="/config/" method="POST">
                 <div class="form-group">
-                    <label for="frequency">Frequency of Samples (per second)</label>
+                    <label for="frequency">Number of Samples Per Hour</label>
                     <input type="integer" class="form-control" id="frequency" name="frequency" placeholder="Whole Numbers Only">
-                    <label for="duration">Duration of Measurement Cycle (minutes)</label>
-                    <input type="float" class="form-control" id="duration" name="duration" placeholder="Whole Numbers Only"">
+                    <br>
+
+                    <label for="hr">Duration of Measurement Cycle (hours)</label>
+                    <input type="float" class="form-control" id="hr" name="hr" placeholder="Whole Numbers Only">
+                    <br>
+
+                    <label for="min">Duration of Measurement Cycle (minutes)</label>
+                    <input type="float" class="form-control" id="min" name="min" placeholder="Whole Numbers Only">
+                    <br>
+
+                    <label for="sec">Duration of Measurement Cycle (seconds)</label>
+                    <input type="float" class="form-control" id="sec" name="sec" placeholder="Whole Numbers Only">
+                    <br>
+                    
                 </div>
+
                 <button type="submit" class="btn btn-primary">Start Measurement</button>
                 {{ form.csrf_token }}
             </form>

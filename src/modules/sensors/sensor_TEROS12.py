@@ -6,8 +6,8 @@ import re
 
 
 class sensor(Sensor):
-    def __init__(self, address):
-        self.address = address
+    def __init__(self):
+        self.address = 0
 
         self.bus = smbus2.SMBus(1)
         time.sleep(0.01)
@@ -21,7 +21,7 @@ class sensor(Sensor):
         moisture = float(resp_components[0])
         temperature = float(resp_components[1])
         e_c = float(resp_components[2])
-        
+
 
         return [
             {

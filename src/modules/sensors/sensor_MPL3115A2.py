@@ -2,8 +2,7 @@ from src.modules.sensors.utils import Sensor, NANO, NANO_I2C_ADDR, try_io
 import smbus2
 import time
 
-
-class sensor(Sensor):
+class MPL3115A2:
     I2C_ADDRESS = 0x60
     REGISTER_STATUS_ADDRESS = 0x00
     REGISTER_PRESSURE_MSB = 0x01
@@ -28,6 +27,7 @@ class sensor(Sensor):
         PDEFE = 0x02
         DREM = 0x04
 
+class sensor(Sensor):
     def __init__(self):
         address = MPL3115A2.I2C_ADDRESS
 

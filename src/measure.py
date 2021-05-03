@@ -8,6 +8,8 @@ from src.modules.webui.celery import task_queue
 import time
 from src.modules.sensor import init_sensor
 
+num_samples = 0
+num_proj_samples = 0
 
 CONFIG = Config("config.ini")
 
@@ -19,12 +21,19 @@ SENSORS = {}
 for sensor in CONFIG.SENSORS:
     SENSORS[sensor] = init_sensor(CONFIG.SENSORS[sensor])
 
+    if SENSORS[sensor] is None:
+        print(sensor + " is NoneType!")
+    else:
+        print(sensor + " is intialized...")
+
 # Initialize Celery Task for measurements
 @task_queue.task(name="src.measure.measurement_cycle")
-def measurement_cycle(duration, frequency):
+def measurement_cycle(hr, min, sec, num_samples):
     setup()
 
-    target_time = time.time() + (60 * duration)
+    target_time = time.time() + sec + (min * 60) + (hr * 3600)
+    frequency = ( 1 / num_samples ) * 3600
+    num_proj_samples = frequency * 3600
 
     i = 0
     while (time.time() < target_time):
@@ -46,7 +55,11 @@ def loop(freq):
     # Get responses from sensors
     responses = {}
     for sensor in SENSORS:
-        responses[sensor] = SENSORS[sensor].read_all()
+        try:
+            responses[sensor] = SENSORS[sensor].read_all()
+            print(responses[sensor])
+        except:
+            print("Error Reading: (" + sensor + ")")
 
     # Check if target time was hit
     if (time.time() < end):
@@ -61,7 +74,7 @@ def loop(freq):
     pass
 
     # Wait here until duration has elapsed
-    while (time.time() < end):
+    while ((time.time() < end) and (num_samples < num_proj_samples)):
         time.sleep(0.001)
 
 

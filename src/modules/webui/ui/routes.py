@@ -30,10 +30,12 @@ def config():
     if request.method == 'POST' and form.validate():
         config = {
             "sample_frequency": form.frequency.data,
-            "duration": form.duration.data,
+            "hr": form.hr.data,
+            "min": form.min.data,
+            "sec": form.sec.data,
         }
 
-        task = measurement_cycle.delay(config["duration"], config["sample_frequency"])
+        task = measurement_cycle.delay(config["hr"], config["min"], config["sec"], config["sample_frequency"])
         async_result = task_queue.AsyncResult(id=task.task_id, app=task_queue)
         
         flash("Success! Configuration sent to box. Measurements Starting...", "alert-success")

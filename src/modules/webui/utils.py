@@ -5,6 +5,7 @@ import re
 
 from src.measure import SENSORS
 from src.modules.database import DB
+from src.modules.sensors.PA1010D import GPS
 
 
 def get_files_in_dir(path:str) -> list:
@@ -47,10 +48,21 @@ def get_site_list():
 
     sites = DB.get_site_list()
     for site in sites:
-        site_list.append(f"""ID: {site["id"]}   Name: {site["name"]}    Depth: {site["depth"]}  Lat: {site["latitude"]} Long: {site["longitude"]}""")
+        site_list.append(f"""ID: {site["id"]}   Name: {site["name"]}    Depth: {site["depth"]}  Latitude: {site["latitude"]} Longitude: {site["longitude"]}""")
 
     return site_list
 
+def add_site(name, lat, long, depth):
+    DB.add_site(name, lat, long, depth)
+
+def read_gps():
+    gps = GPS()
+    response = gps.read_all()
+
+    return {
+        "latitude": response["latitude"],
+        "longitude": response["longitude"]
+    }
 
 def str_to_bytes(data: str) -> bytes:
     return data.encode()

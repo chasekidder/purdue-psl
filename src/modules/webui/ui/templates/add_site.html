@@ -16,6 +16,9 @@ Home
 
                     <label for="latitude">Latitude</label>
                     <input type="integer" class="form-control" id="latitude" name="latitude" placeholder="Latitude">
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-primary" type="button" onclick="updateGPS();">Read Lat/Long From GPS</button>
+                    </div>
                     <br>
 
                     <label for="longitude">Longitude</label>
@@ -49,8 +52,25 @@ Home
                         <p>No Sites Found</p>
                     {% endif %}
                 </div>
-            
+
         </div>
+        
+        <script type="text/javascript">
+            function updateGPS(){
+                const url = "/api/gps/";  
+                fetch(url)
+                    .then((resp) => resp.json())
+                    .then(function(gps) { 
+                        document.getElementById("latitude").value = gps["latitude"];
+                        document.getElementById("longitude").value = gps["longitude"];
+                    })
+                    .catch(function(error) {
+                        console.log(error);
+                    });
+            }
+        
+        </script>
+
     </body>
 </html>
 {% endblock %}

@@ -1,6 +1,8 @@
 import sqlite3
 import os
 import io
+from datetime import datetime, timezone
+
 
 from src.modules.config import Config
 
@@ -8,7 +10,6 @@ CONFIG = Config("config.ini")
 
 DEFAULT_PATH = os.path.join(CONFIG.USB_DIR, "database.sqlite3")
 DEFAULT_BACKUP_PATH = DEFAULT_PATH + ".sql"
-print(DEFAULT_PATH)
 
 class Database():
     def __init__(self, path = DEFAULT_PATH):
@@ -58,7 +59,8 @@ class Database():
                 for measurement in responses[sensor]:
                     # Insert data into database
                     print(measurement)
-                    self.curs.execute(sql_insert, (site_id, sensor, str(measurement["timestamp"]),
+                    timestamp_iso8601 = datetime.fromtimestamp(measurement["timestamp"], timezone.utc).isoformat('T', 'milliseconds')
+                    self.curs.execute(sql_insert, (site_id, sensor, str(timestamp_iso8601),
                         measurement["type"], measurement["value"], measurement["unit"]))
             except:
                 print("Skipping Invalid Measurement...")

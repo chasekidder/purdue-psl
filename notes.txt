@@ -15,6 +15,7 @@ PI SETUP:
     - enable dwc2
 - create venv
 - install python requirements
+    - edit pa1010d __init__.py to use smbus2 as smbus
 - install rabbitmq-server
 - install usbmount (apt)
     - edit /etc/usbmount/usbmount.conf
@@ -25,3 +26,4 @@ PI SETUP:
         .include /usr/lib/systemd/system/systemd-udevd.service
         [Service]
         PrivateMounts=no
+

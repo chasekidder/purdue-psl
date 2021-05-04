@@ -71,17 +71,17 @@ def api():
     data = utils.get_live_data()
     return jsonify(data)
 
-@routes.route("/site/add/")
+@routes.route("/site/add/", methods=["GET", "POST"])
 def add_site():
     form = AddSiteForm()
     site_list = utils.get_site_list()
 
     if request.method == 'POST':
         site = {
-            "frequency": form.name.data,
-            "hr": form.latitude.data,
-            "min": form.longitude.data,
-            "sec": form.depth.data
+            "name": form.name.data,
+            "latitude": form.latitude.data,
+            "longitude": form.longitude.data,
+            "depth": form.depth.data
         }
             
         for data in site:
@@ -89,12 +89,18 @@ def add_site():
                 flash("Required Field Not Completed!", "alert-warning")
                 return render_template("add_site.html", form=form, site_list=site_list)
 
-        # Write site to DB here
+        utils.add_site(site["name"], site["latitude"], site["longitude"], site["depth"])
         
         flash("Success! Site Added to Database.", "alert-success")
-        return redirect("/")
+        return redirect("/site/add/")
 
-    return render_template("config.html", form=form, site_list=site_list)
+    return render_template("add_site.html", form=form, site_list=site_list)
+
+@routes.route("/api/gps/")
+def read_gps():
+    gps_results = utils.read_gps()
+    return jsonify(gps_results)
+
 
 # @routes.route("/old_api/")
 # def old_api():

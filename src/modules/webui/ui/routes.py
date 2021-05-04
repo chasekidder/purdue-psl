@@ -8,7 +8,7 @@ from flask import send_from_directory
 from flask import jsonify
 
 from src.modules.webui import utils
-from src.modules.webui.ui.forms import CycleConfigForm
+from src.modules.webui.ui.forms import CycleConfigForm, AddSiteForm
 
 from src.measure import measurement_cycle
 from src.modules.webui.celery import task_queue
@@ -71,7 +71,32 @@ def api():
     data = utils.get_live_data()
     return jsonify(data)
 
-@routes.route("/old_api/")
-def old_api():
-    data = utils.old_get_live_data()
-    return jsonify(data)
+@routes.route("/site/add/")
+def add_site():
+    form = AddSiteForm()
+    site_list = utils.get_site_list()
+
+    if request.method == 'POST':
+        site = {
+            "frequency": form.name.data,
+            "hr": form.latitude.data,
+            "min": form.longitude.data,
+            "sec": form.depth.data
+        }
+            
+        for data in site:
+            if site[data] is None:
+                flash("Required Field Not Completed!", "alert-warning")
+                return render_template("add_site.html", form=form, site_list=site_list)
+
+        # Write site to DB here
+        
+        flash("Success! Site Added to Database.", "alert-success")
+        return redirect("/")
+
+    return render_template("config.html", form=form, site_list=site_list)
+
+# @routes.route("/old_api/")
+# def old_api():
+#     data = utils.old_get_live_data()
+#     return jsonify(data)

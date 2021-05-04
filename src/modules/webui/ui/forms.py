@@ -10,4 +10,10 @@ class CycleConfigForm(FlaskForm):
     sec = IntegerField("Duration (sec)")
     site_id = IntegerField("Site ID (integer)")
 
+class AddSiteForm(FlaskForm):
+    name = StringField()
+    latitude = StringField()
+    longitude = StringField()
+    depth = StringField()
+
 

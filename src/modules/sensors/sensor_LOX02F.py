@@ -109,6 +109,7 @@ class sensor(Sensor):
         return val
 
     def read_oxygen_pressure(self) -> float:
+        target_time = time.time() + 0.25
         command_string = "P\r\n"
         command_bytes = [ord(c) for c in command_string] 
         
@@ -119,6 +120,8 @@ class sensor(Sensor):
         while (value[0] == 0x0F):
             value = self.bus.read_i2c_block_data(NANO_I2C_ADDR, NANO.UART1_READ, 32)
             time.sleep(0.1)
+            if(time.time() > target_time):
+                return None
         print(value)
 
         if (value[0] == 0x0F):

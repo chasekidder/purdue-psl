@@ -18,13 +18,13 @@ class sensor(Sensor):
                 "timestamp": time.time(),
                 "type": "co2 1", 
                 "value": self.read_co2_concentration_0(), 
-                "unit": "percent"
+                "unit": "ppm"
             },
             {
                 "timestamp": time.time(),
                 "type": "co2 2", 
                 "value": self.read_co2_concentration_1(), 
-                "unit": "percent"
+                "unit": "ppm"
             }
         ]
 

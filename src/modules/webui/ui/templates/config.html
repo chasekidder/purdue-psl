@@ -8,23 +8,26 @@ Home
         <title>Config Page</title>
     </head>
     <body>
-        <div class="container">
-            <form action="/config/" method="POST">
+            <form action="/config/" method="POST" class="container">
                 <div class="form-group">
+                    <label for="site_id">Site ID</label>
+                    <input type="integer" class="form-control" id="site_id" name="site_id" placeholder="Integers Only">
+                    <br>
+
                     <label for="frequency">Number of Samples Per Hour</label>
                     <input type="integer" class="form-control" id="frequency" name="frequency" placeholder="Whole Numbers Only">
                     <br>
 
                     <label for="hr">Duration of Measurement Cycle (hours)</label>
-                    <input type="float" class="form-control" id="hr" name="hr" placeholder="Whole Numbers Only">
+                    <input type="integer" class="form-control" id="hr" name="hr" placeholder="Whole Numbers Only">
                     <br>
 
                     <label for="min">Duration of Measurement Cycle (minutes)</label>
-                    <input type="float" class="form-control" id="min" name="min" placeholder="Whole Numbers Only">
+                    <input type="integer" class="form-control" id="min" name="min" placeholder="Whole Numbers Only">
                     <br>
 
                     <label for="sec">Duration of Measurement Cycle (seconds)</label>
-                    <input type="float" class="form-control" id="sec" name="sec" placeholder="Whole Numbers Only">
+                    <input type="integer" class="form-control" id="sec" name="sec" placeholder="Whole Numbers Only">
                     <br>
                     
                 </div>
@@ -33,6 +36,24 @@ Home
                 {{ form.csrf_token }}
             </form>
 
+            <br>
+
+            <div class="container">
+                <div class="container" >
+                    {% if site_list %}
+                        <h2>Sites:</h2>
+                        {% for site in site_list %}
+                            <div class="row">
+                                <div class="col-sm-10">
+                                    <p>{{ site }}</p>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <p>No Sites Found</p>
+                    {% endif %}
+                    <button type="button" class="btn btn-primary btn-lg" onclick="location.href='/site/add';">Create New Site</button>
+                </div>
             
         </div>
     </body>

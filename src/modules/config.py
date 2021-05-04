@@ -20,7 +20,7 @@ class Config():
         self.WEBUI_PORT = parser.get("webui", "port")
         self.MEASURE_DURATION = parser.get("measurement", "duration")
         
-        self.SENSORS_DIR = parser.get("sensor config", "directory")
+        self.USB_DIR = parser.get("database", "path")
 
         self.SENSORS = dict(parser.items('sensors'))
 

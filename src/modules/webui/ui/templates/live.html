@@ -17,12 +17,24 @@ Live Data
         <h1>Live Data View</h1>
         <div class="container justify-content-center">
             
-        <!-- Live Data Chart -->
-        <!-- TODO: Make Number of Charts dynamic w/ template -->
-        <div class="container" style="width:75%">
+        <!-- Charts -->
+        <div id="chart_div" class="container" style="width:75%">
+            <!-- Visibility Checkboxes -->
+            <div id="checkbox_div"></div>
+            
+            <br>
+
+            <!-- Pause Button-->
             <p>
                 <button id="pause-scroll" class="btn btn-primary">Pause</button>
             </p>
+
+        </div>
+
+
+
+        <!-- <div class="container" style="width:75%">
+
             <div class="row">
                 <div class="col-lg-auto">
                     <canvas id="gas_chart" width="400" height="400"></canvas>
@@ -31,31 +43,19 @@ Live Data
                     <canvas class="col-md-auto" id="pressure_chart" width="400" height="400"></canvas>
                 </div>
             </div>
-            <div class="row">
-                <div class="col-lg-auto">
-                    <canvas id="temperature_chart" width="400" height="400"></canvas>
-                </div>
-                <div class="col-lg-auto">
-                    <canvas class="col-md-auto" id="ec_chart" width="400" height="400"></canvas>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-lg-auto">
-                    <canvas id="moisture_chart" width="400" height="400"></canvas>
-                </div>
-                <div class="col-lg-auto">
-                    <canvas class="col-md-auto" id="misc_chart" width="400" height="400"></canvas>
-                </div>
-            </div>
-        </div>
+        </div> -->
     </div>
 
-    <script>
+    
+    <!-- Live Data Processing -->
+    <script type="text/javascript">
         var live_data = {};
-        setInterval(getLiveData, 1000);
 
+        setInterval(getLiveData, 5000);
+
+        // Request New Data From API
         function getLiveData() {
-            const url = "/old_api/";  
+            const url = "/api/";  
             fetch(url)
                 .then((resp) => resp.json())
                 .then(function(new_live_data) {
@@ -64,44 +64,32 @@ Live Data
                 .catch(function(error) {
                     console.log(error);
                 });
-            }
-        
-        Chart.defaults.line.spanGaps = true;
+        }
 
-
-        var c1 = document.getElementById('gas_chart').getContext('2d');
-        var c2 = document.getElementById('pressure_chart').getContext('2d');
-        var c3 = document.getElementById('temperature_chart').getContext('2d');
-        var c4 = document.getElementById('moisture_chart').getContext('2d');
-        var c5 = document.getElementById('ec_chart').getContext('2d');
-        var charts = [
-                    buildChart(c1, "Gas Concentration", ["Oxygen", "Carbon Dioxide"], "Concentration (%)"),
-                    buildChart(c2, "Gas Pressure", ["Gas Pressure"], "Pressure (PSI)"),
-                    buildChart(c3, "Temperature", ["Sensor1", "Sensor2", "Sensor3"], "Temperature (C)"),
-                    buildChart(c4, "Moisture", ["Sensor1", "Sensor2", "Sensor3"], "Moisture (%)"),
-                    buildChart(c5, "Electrical Conductivity", ["Sensor1", "Sensor2", "Sensor3"], "EC (mV?)"),
-                    ]
-    
-        var pause_btn = document.getElementById('pause-scroll')
+        // Pause Chart Scroll On Button Press
+        var pause_btn = document.getElementById('pause-scroll');
         pause_btn.addEventListener('click', function() {
             charts.forEach(function(chart){
-                // TODO: Stop Queries!
+                // Play
                 if (chart.config.options.plugins.streaming.pause === true) {
-                    setInterval(getLiveData, 1000);
                     chart.config.options.plugins.streaming.pause = false;
+                    chart.enabled = true;
                     pause_btn.innerText = "Pause";
                 }
+                // Pause
                 else {
-                    clearInterval(getLiveData);
                     chart.config.options.plugins.streaming.pause = true;
+                    chart.enabled = false;
                     pause_btn.innerText = "Play";
                 }
                 chart.update();
             })
 		});
 
+        // Initialize Charts
+        initCharts();
         
-
     </script>
+
 </body>
 {% endblock %}

@@ -23,12 +23,11 @@ for sensor in CONFIG.SENSORS:
 
     if SENSORS[sensor] is None:
         print(sensor + " is NoneType!")
-    else:
-        print(sensor + " is intialized...")
+    
 
 # Initialize Celery Task for measurements
 @task_queue.task(name="src.measure.measurement_cycle")
-def measurement_cycle(hr, min, sec, num_samples):
+def measurement_cycle(site_id, hr, min, sec, num_samples):
     setup()
 
     target_time = time.time() + sec + (min * 60) + (hr * 3600)
@@ -37,7 +36,7 @@ def measurement_cycle(hr, min, sec, num_samples):
 
     i = 0
     while (time.time() < target_time):
-        loop(frequency)
+        loop(site_id, frequency)
 
     clean_up()
     
@@ -47,7 +46,7 @@ def setup():
     DB.backup()
 
 
-def loop(freq):
+def loop(site_id, freq):
     # Set target time
     start = time.time()
     end = start + (1 / freq)
@@ -68,7 +67,7 @@ def loop(freq):
         print("Missed Target! :(")
 
     # Record Data to File
-    DB.log_data(responses)
+    DB.log_data(site_id, responses)
 
     # Control Box (eg pump)
     pass

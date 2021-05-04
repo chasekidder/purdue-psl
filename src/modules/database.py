@@ -6,8 +6,9 @@ from src.modules.config import Config
 
 CONFIG = Config("config.ini")
 
-DEFAULT_PATH = os.path.join(CONFIG.PATH, "database.sqlite3")
+DEFAULT_PATH = os.path.join(CONFIG.USB_DIR, "database.sqlite3")
 DEFAULT_BACKUP_PATH = DEFAULT_PATH + ".sql"
+print(DEFAULT_PATH)
 
 class Database():
     def __init__(self, path = DEFAULT_PATH):
@@ -15,14 +16,25 @@ class Database():
             self.con = sqlite3.connect(path)
         else:
             self.con = sqlite3.connect(path)
+            self.con.execute("""CREATE TABLE "sites" (
+                "id"	INTEGER,
+                "name"  INTEGER NOT NULL,
+                "latitude"	TEXT NOT NULL,
+                "longitude"	TEXT NOT NULL,
+                "depth"	TEXT NOT NULL,
+                PRIMARY KEY("id" AUTOINCREMENT)
+            )""")
+
             self.con.execute("""CREATE TABLE "measurements" (
                 "id"	INTEGER,
+                "site"  INTEGER NOT NULL,
                 "sensor"	TEXT NOT NULL,
                 "timestamp"	TEXT NOT NULL,
                 "type"	TEXT NOT NULL,
                 "value"	REAL NOT NULL,
                 "unit"	TEXT NOT NULL,
-                PRIMARY KEY("id" AUTOINCREMENT)
+                PRIMARY KEY("id" AUTOINCREMENT),
+                FOREIGN KEY(site) REFERENCES sites(id)
             )""")
 
         self.curs = self.con.cursor()
@@ -33,11 +45,11 @@ class Database():
                 f.write('%s\n' % linha)
             print('Backup performed successfully.')
 
-    def log_data(self, responses:dict):
+    def log_data(self, site_id:int, responses:dict):
         sql_insert = """
                 INSERT INTO measurements (
-                    sensor, timestamp, type, value, unit) 
-                VALUES (?, ?, ?, ?, ?);
+                    site, sensor, timestamp, type, value, unit) 
+                VALUES (?, ?, ?, ?, ?, ?);
                 """
 
         
@@ -46,38 +58,77 @@ class Database():
                 for measurement in responses[sensor]:
                     # Insert data into database
                     print(measurement)
-                    self.curs.execute(sql_insert, (sensor, str(measurement["timestamp"]),
+                    self.curs.execute(sql_insert, (site_id, sensor, str(measurement["timestamp"]),
                         measurement["type"], measurement["value"], measurement["unit"]))
             except:
                 print("Skipping Invalid Measurement...")
 
         self.con.commit()
 
+    def add_site(self, name, latitude, longitude, depth):
+        sql_insert = """
+            INSERT INTO sites (
+                name, latitude, longitude, depth)
+            VALUES (?, ?, ?, ?);
+            """
+        self.curs.execute(sql_insert, (str(name), str(latitude), str(longitude), str(depth)))
+        self.con.commit()
 
-    def get_most_recent(self, sensor_name):
+    def get_most_recent(self):
         keys = [
             "id",
-            "sensor_name",
+            "site",
+            "sensor",
             "timestamp",
             "type",
             "value",
             "unit"
         ]
 
-        sql_insert = f"""
-            SELECT * 
+        sql_query = f"""
+            SELECT DISTINCT id, site, sensor, max(timestamp), type, value, unit 
             FROM measurements 
-            WHERE measurements.timestamp = (
-                SELECT MAX(measurements.timestamp) 
-                FROM measurements
-                WHERE measurements.sensor = '{ sensor_name}') 
-            and measurements.sensor = '{ sensor_name }';""" 
-        print(sql_insert)
-        query = self.con.execute(sql_insert).fetchall()
-        values = list(query.pop(0))
-        response = dict(zip(keys, values))
-        return response
+            GROUP BY type
+            ;""" 
 
+
+        #print(sql_query)
+        # query = self.con.execute(sql_query).fetchall()
+        # values = list(query.pop(0))
+        # response = dict(zip(keys, values))
+        # return response
+        measurements = []
+
+        query = self.con.execute(sql_query).fetchall()
+        values = [list(measurement) for measurement in query]
+
+        for measurement in values:
+            measurements.append(dict(zip(keys, measurement)))
+
+        return measurements
+
+    def get_site_list(self):
+        keys = [
+            "id",
+            "name",
+            "latitude",
+            "longitude",
+            "depth"
+        ]
+
+        sql_query = """ 
+            SELECT *
+            FROM sites;
+        """
+        sites = []
+
+        query = self.con.execute(sql_query).fetchall()
+        values = [list(site) for site in query]
+
+        for site in values:
+            sites.append(dict(zip(keys, site)))
+
+        return sites
 
 
 DB = Database()

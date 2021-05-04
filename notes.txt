@@ -8,3 +8,20 @@ sudo service rabbitmq-server start
 sudo service rabbitmq-server stop
 
 sshfs pi@IP: mnt_folder
+
+PI SETUP:
+- edit config.txt
+    - enable i2c
+    - enable dwc2
+- create venv
+- install python requirements
+- install rabbitmq-server
+- install usbmount (apt)
+    - edit /etc/usbmount/usbmount.conf
+    - change FS_MOUNTOPTIONS="-fstype=vfat,umask=0000"
+
+    - create /etc/systemd/system/systemd-udevd.service.d/override.conf
+    - add 
+        .include /usr/lib/systemd/system/systemd-udevd.service
+        [Service]
+        PrivateMounts=no

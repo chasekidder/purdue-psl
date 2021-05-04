@@ -13,6 +13,9 @@ from src.modules.webui.ui.forms import CycleConfigForm
 from src.measure import measurement_cycle
 from src.modules.webui.celery import task_queue
 
+from src.modules.config import Config
+CONFIG = Config("config.ini")
+
 routes = Blueprint("routes", __name__)
 
 @routes.route('/')
@@ -26,29 +29,33 @@ def live():
 @routes.route("/config/", methods=["GET", "POST"])
 def config():
     form = CycleConfigForm()
+    site_list = utils.get_site_list()
 
-    if request.method == 'POST' and form.validate():
+    if request.method == 'POST':
         config = {
-            "sample_frequency": form.frequency.data,
+            "frequency": form.frequency.data,
             "hr": form.hr.data,
             "min": form.min.data,
             "sec": form.sec.data,
+            "site_id": form.site_id.data,
         }
+            
+        for data in config:
+            if config[data] is None:
+                flash("Required Field Not Completed!", "alert-warning")
+                return render_template("config.html", form=form, site_list=site_list)
 
-        task = measurement_cycle.delay(config["hr"], config["min"], config["sec"], config["sample_frequency"])
+        task = measurement_cycle.delay(config["site_id"], config["hr"], config["min"], config["sec"], config["frequency"])
         async_result = task_queue.AsyncResult(id=task.task_id, app=task_queue)
         
         flash("Success! Configuration sent to box. Measurements Starting...", "alert-success")
         return redirect("/live/")
 
-    elif request.method == 'POST' and not form.validate():
-        flash("Required Field Not Completed!", "alert-warning")
-
-    return render_template("config.html", form=form)
+    return render_template("config.html", form=form, site_list=site_list)
 
 @routes.route("/data/")
 def data():
-    files = utils.get_files_in_dir("/")
+    files = utils.get_files_in_dir(CONFIG.USB_DIR)
     return render_template("data.html", file_list=files)
 
 @routes.route("/download/")
@@ -57,7 +64,7 @@ def download_root():
 
 @routes.route("/download/<string:file_name>/")
 def download(file_name):
-    return send_from_directory("/", filename=file_name)
+    return send_from_directory(CONFIG.USB_DIR, filename=file_name)
 
 @routes.route("/api/")
 def api():

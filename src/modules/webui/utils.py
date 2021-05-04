@@ -35,12 +35,21 @@ def old_get_live_data():
             }
 
 def get_live_data():
-    data = {}
+    # data = {}
 
-    for sensor in SENSORS:
-        data[sensor] = DB.get_most_recent(sensor)
+    # for sensor in SENSORS:
+    #     data[sensor] = DB.get_most_recent(sensor)
 
-    return data
+    return DB.get_most_recent()
+
+def get_site_list():
+    site_list = []
+
+    sites = DB.get_site_list()
+    for site in sites:
+        site_list.append(f"""ID: {site["id"]}   Name: {site["name"]}    Depth: {site["depth"]}  Lat: {site["latitude"]} Long: {site["longitude"]}""")
+
+    return site_list
 
 
 def str_to_bytes(data: str) -> bytes:

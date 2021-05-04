@@ -136,5 +136,4 @@ class ADS1115(Sensor):
 
         # Read conversion result
         value = self.bus.read_i2c_block_data(ADS1115.I2C_ADDRESS, ADS1115.CONV_REG_ADDR, 2)
-        print(value)
         return value[0] << 8 | value[1]

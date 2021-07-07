@@ -34,8 +34,8 @@ class sensor(Sensor):
         # Vin = 5 volts
         # Cmax = 200000 ppm
 
-        Vout = self.adc.read_ADC2_V()
-        return (Vout / 5) * 200000
+        Bout = self.adc.read_ADC2_V()
+        return Bout
 
     def read_co2_concentration_1(self) -> float:
         # GMP251 - ADS1115 ADC3
@@ -43,5 +43,5 @@ class sensor(Sensor):
         # Vin = 5 volts
         # Cmax = 200000 ppm
 
-        Vout = self.adc.read_ADC3_V()
-        return (Vout / 5) * 200000
+        Bout = self.adc.read_ADC3_V()
+        return Bout

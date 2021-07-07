@@ -35,7 +35,7 @@ class sensor(Sensor):
         # Cmax = 200000 ppm
 
         Bout = self.adc.read_ADC2_V()
-        return Bout
+        return 5
 
     def read_co2_concentration_1(self) -> float:
         # GMP251 - ADS1115 ADC3
